@@ -1,1 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Battery Monitor - Firebase Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>🔋 Live Battery Monitoring Dashboard</h1>
+        <p>Real-time data from Firebase Realtime Database</p>
+        <div class="connection-status" id="connectionStatus">
+            <span class="dot"></span> Connecting to Firebase...
+        </div>
+    </div>
 
+    <div class="main-container">
+        <!-- Main Battery Card -->
+        <div class="battery-card">
+            <div class="battery-visual">
+                <div class="battery-body">
+                    <div class="battery-level" id="batteryLevel"></div>
+                    <div class="battery-terminal"></div>
+                </div>
+            </div>
+            <div class="percentage-display">
+                <span id="percentage" class="percentage-number">0</span>
+                <span class="percentage-sign">%</span>
+            </div>
+            <div class="status-badge" id="statusBadge">
+                <span class="status-icon">🔋</span>
+                <span id="statusText">Loading...</span>
+            </div>
+        </div>
+
+        <!-- Detailed Information -->
+        <div class="details-grid">
+            <div class="detail-card">
+                <div class="detail-icon">⏱️</div>
+                <div class="detail-info">
+                    <h4>Last Update</h4>
+                    <p id="lastUpdate">--</p>
+                </div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-icon">🔄</div>
+                <div class="detail-info">
+                    <h4>Cycle Count</h4>
+                    <p id="cycleCount">--</p>
+                </div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-icon">🏭</div>
+                <div class="detail-info">
+                    <h4>Manufacturer</h4>
+                    <p id="manufacturer">--</p>
+                </div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-icon">⚡</div>
+                <div class="detail-info">
+                    <h4>Voltage</h4>
+                    <p id="voltage">-- V</p>
+                </div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-icon">🔌</div>
+                <div class="detail-info">
+                    <h4>AC Power</h4>
+                    <p id="acStatus">--</p>
+                </div>
+            </div>
+            <div class="detail-card">
+                <div class="detail-icon">⏰</div>
+                <div class="detail-info">
+                    <h4>Time Remaining</h4>
+                    <p id="timeRemaining">-- min</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Historical Data Chart -->
+        <div class="chart-container">
+            <h3>📊 Battery Percentage History (Last 10 updates)</h3>
+            <canvas id="batteryChart"></canvas>
+        </div>
+
+        <!-- Recent Updates Log -->
+        <div class="log-container">
+            <h3>📝 Recent Updates Log</h3>
+            <div id="updateLog" class="update-log"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

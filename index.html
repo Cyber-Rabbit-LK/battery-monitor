@@ -1,1 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Battery Monitor - Electron</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            width: 400px;
+        }
+        
+        .battery-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .percentage {
+            font-size: 72px;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .status {
+            font-size: 24px;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .charging {
+            color: #4ade80;
+        }
+        
+        .discharging {
+            color: #fbbf24;
+        }
+        
+        .details {
+            margin-top: 20px;
+            text-align: left;
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        
+        .details p {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .firebase-status {
+            margin-top: 15px;
+            font-size: 12px;
+            color: #a0aec0;
+        }
+        
+        .live-badge {
+            background: #ef4444;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 15px;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="live-badge">🔴 LIVE TO FIREBASE</div>
+        <div class="battery-icon">🔋</div>
+        <div class="percentage" id="percentage">--%</div>
+        <div class="status" id="status">Loading...</div>
+        <div class="details" id="details">
+            <p>⏱️ Last update: --</p>
+            <p>🔄 Cycle count: --</p>
+            <p>🏭 Manufacturer: --</p>
+            <p>⚡ Voltage: --</p>
+        </div>
+        <div class="firebase-status">
+            ✅ Data syncing to Firebase Realtime Database
+        </div>
+    </div>
 
+    <script>
+        const { ipcRenderer } = require('electron');
+        
+        function updateUI(data) {
+            document.getElementById('percentage').textContent = `${data.percentage}%`;
+            
+            const statusDiv = document.getElementById('status');
+            if (data.isCharging) {
+                statusDiv.innerHTML = '⚡ CHARGING';
+                statusDiv.className = 'status charging';
+            } else {
+                statusDiv.innerHTML = '🔋 DISCHARGING';
+                statusDiv.className = 'status discharging';
+            }
+            
+            document.getElementById('details').innerHTML = `
+                <p>⏱️ Last update: ${new Date().toLocaleTimeString()}</p>
+                <p>🔄 Cycle count: ${data.cycleCount}</p>
+                <p>🏭 Manufacturer: ${data.manufacturer}</p>
+                <p>⚡ Voltage: ${data.voltage} V</p>
+                <p>🔌 AC Connected: ${data.acConnected ? 'Yes' : 'No'}</p>
+                ${!data.isCharging && data.timeRemaining ? `<p>⏰ Time remaining: ${Math.floor(data.timeRemaining)} min</p>` : ''}
+            `;
+        }
+        
+        ipcRenderer.on('battery-update', (event, data) => {
+            updateUI(data);
+        });
+        
+        // Request initial data
+        ipcRenderer.send('refresh-battery');
+        ipcRenderer.on('battery-data', (event, data) => {
+            updateUI(data);
+        });
+    </script>
+</body>
+</html>
